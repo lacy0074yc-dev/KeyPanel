@@ -1,13 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// uuid yerine native crypto
+const { randomUUID } = require('crypto');
 
 let users = [];
 let keys = [];
@@ -20,7 +22,7 @@ app.post('/api/register', (req, res) => {
     return res.status(400).json({ error: 'Kullanici adi ve sifre zorunlu' });
   if (users.find(u => u.username === username))
     return res.status(400).json({ error: 'Bu kullanici zaten var' });
-  const newUser = { id: uuidv4(), username, password, isAdmin: users.length === 0 };
+  const newUser = { id: randomUUID(), username, password, isAdmin: users.length === 0 };
   users.push(newUser);
   res.json({ message: 'Kayit basarili', user: { id: newUser.id, username: newUser.username, isAdmin: newUser.isAdmin } });
 });
